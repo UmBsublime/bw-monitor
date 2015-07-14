@@ -30,7 +30,7 @@ def main():
     #rules.redirect_chain1_to_chain2('OUTPUT', chain_name)
     #rules.redirect_chain1_to_chain2('INPUT', chain_name)
 
-    all_chains = rule_set.create_rule_set('TEST', (22,80,443), (22,80,443),('192.168.1.0/24',),('0.0.0.0/0','192.168.1.0/24'))
+    all_chains = rule_set.create_rule_set('TEST', (22,80,443), (22,80,443),('192.168.1.0/24','255.255.255.255/255.255.255.255'),('192.168.1.0/24','255.255.255.255/255.255.255.255'))
     for i in all_chains:
         rules.print_rules(i)
 if __name__ == '__main__':

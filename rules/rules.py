@@ -77,17 +77,23 @@ def print_rules(chain_name, convert_units = True):
     print '*'*30
     print '*{:^28}*'.format(chain_name)
     print '*'*30
-    rule_format = 'src net: {src_net:<30}\ndst net: {dst_net:<30}\n{match}\npkts: {packets:<7}size: {bytes:<7}\n---'
+    rule_format = '{src_net} --> {dst_net} {match}\npkts: {packets:<7}size: {bytes:<7}\n---'
     chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
 
     counters = get_chain_counters(chain_name)
     i = 0
     for r in chain.rules:
         packets, bytes = counters[i]
-        if convert_units:
-            bytes = helper.convert_to_smallest_repr(bytes)
         src_net =  r.src
         dst_net = r.dst
+        
+        if convert_units:
+            bytes = helper.convert_to_smallest_repr(bytes)
+            src_net, subnet = src_net.split('/')
+            src_net = src_net + '/' + helper.convert_submask_to_cidr(subnet)
+            dst_net, subnet = dst_net.split('/')
+            dst_net = dst_net + '/' + helper.convert_submask_to_cidr(subnet)
+
         match = "match: "
         for m in r.matches:
             match += m.name
@@ -95,6 +101,8 @@ def print_rules(chain_name, convert_units = True):
                 match += " src port " + m.sport
             elif m.dport:
                 match += " dst port " + m.dport
+        if match == 'match: ':
+            match += '*'
 
         print rule_format.format(packets=packets, bytes=bytes, src_net=src_net, dst_net=dst_net, match=match)
         i += 1

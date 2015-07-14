@@ -16,6 +16,12 @@ def convert_to_smallest_repr(initial_bytes, divider=1024):
             #    initial_bytes = float(modulus) / float(divider)
             return str(initial_bytes) + ' ' + units[unit]
 
+def convert_submask_to_cidr(netmask):
+    binary_str = ''
+    for octet in netmask.split('.'):
+        binary_str += bin(int(octet))[2:].zfill(8)
+    return str(len(binary_str.rstrip('0')))
+
 
 print convert_to_smallest_repr(1024)
-
+print convert_submask_to_cidr('255.255.255.248')
