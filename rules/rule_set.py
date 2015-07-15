@@ -110,6 +110,3 @@ class Rule_Group(object):
     def get_chain_counters(self):
         return
 
-
-
-    def

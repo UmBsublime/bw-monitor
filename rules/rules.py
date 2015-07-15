@@ -1,5 +1,6 @@
 import iptc
 
+
 from chains.chains import  get_chain_counters
 
 table = iptc.Table(iptc.Table.FILTER)
@@ -72,27 +73,42 @@ def src_ip_rule(chain_name, ip):
         return True
     return False
 
-IN_SRC_RULE = 'in_src_rule'
-OUT_SRC_RULE = 'out_src_rule'
-IN_DST_RULE = 'in_dst_rule'
-OUT_DST_RULE = 'out_dst_rule'
-
 class Rule():
 
-    def __init__(self, rule_type, rule_params):
-        self.rule_type = rule_params
-        self.rule_params = rule_params
+    def __init__(self, chain_name, direction, src_net='0.0.0.0/0', dst_net='0.0.0.0/0', port=0):
+
+        if not isinstance(direction, str):
+            raise TypeError
+        else:
+            if direction.upper() != 'INPUT' and direction.upper() != 'OUTPUT':
+                raise TypeError
+        if not isinstance(src_net, str):
+            raise TypeError
+        if not isinstance(dst_net, str):
+            raise TypeError
+        if not isinstance(port, int):
+            raise TypeError
+
+        self.chain_name = chain_name
+        self.direction = direction
+        self.src_net = src_net
+        self.dst_net = dst_net
+        self.port = port
+
+        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.src = self.src_net
+        rule.dst = self.dst_net
+        if self.port > 0:
+            match = rule.create_match('tcp')
+            match.sport = str(self.port)
+        rule.target = iptc.Target(rule, '')
+        if not test_rule_exists(chain_name, rule):
+            chain.insert_rule(rule)
 
 
-        if self.rule_type == IN_SRC_RULE:
-            return
-        if self.rule_type == OUT_SRC_RULE:
-            return
-        if self.rule_type == IN_DST_RULE:
-            return
-        if self.rule_type == OUT_DST_RULE:
-            return
-
+test = Rule('TEST_out', 'OUTPUT', '10.93.12.0/24', '10.93.12.0/24', 80)
 
 
 import helper
