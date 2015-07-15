@@ -72,6 +72,29 @@ def src_ip_rule(chain_name, ip):
         return True
     return False
 
+IN_SRC_RULE = 'in_src_rule'
+OUT_SRC_RULE = 'out_src_rule'
+IN_DST_RULE = 'in_dst_rule'
+OUT_DST_RULE = 'out_dst_rule'
+
+class Rule():
+
+    def __init__(self, rule_type, rule_params):
+        self.rule_type = rule_params
+        self.rule_params = rule_params
+
+
+        if self.rule_type == IN_SRC_RULE:
+            return
+        if self.rule_type == OUT_SRC_RULE:
+            return
+        if self.rule_type == IN_DST_RULE:
+            return
+        if self.rule_type == OUT_DST_RULE:
+            return
+
+
+
 import helper
 def print_rules(chain_name, convert_units = True):
     print '*'*30
@@ -86,7 +109,7 @@ def print_rules(chain_name, convert_units = True):
         packets, bytes = counters[i]
         src_net =  r.src
         dst_net = r.dst
-        
+
         if convert_units:
             bytes = helper.convert_to_smallest_repr(bytes)
             src_net, subnet = src_net.split('/')
