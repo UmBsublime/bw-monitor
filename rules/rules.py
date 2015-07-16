@@ -1,8 +1,8 @@
 import iptc
 
 
-from chains.chains import  get_chain_counters
-
+#from chains.chains import  get_chain_counters
+#import helper
 table = iptc.Table(iptc.Table.FILTER)
 
 def test_rule_exists(chain_name, rule):
@@ -75,7 +75,7 @@ def src_ip_rule(chain_name, ip):
 
 class Rule():
 
-    def __init__(self, chain_name, direction, src_net='0.0.0.0/0', dst_net='0.0.0.0/0', port=0):
+    def __init__(self, direction, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
 
         if not isinstance(direction, str):
             raise TypeError
@@ -86,32 +86,44 @@ class Rule():
             raise TypeError
         if not isinstance(dst_net, str):
             raise TypeError
-        if not isinstance(port, int):
+        if not isinstance(sport, int):
+            raise TypeError
+        if not isinstance(dport, int):
             raise TypeError
 
-        self.chain_name = chain_name
         self.direction = direction
         self.src_net = src_net
         self.dst_net = dst_net
-        self.port = port
+        self.sport = sport
+        self.dport = dport
+        self.protocol = protocol
+        self.chain_name = []
 
-        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
         rule = iptc.Rule()
-        rule.protocol = 'tcp'
+        rule.protocol = self.protocol
         rule.src = self.src_net
         rule.dst = self.dst_net
-        if self.port > 0:
-            match = rule.create_match('tcp')
-            match.sport = str(self.port)
+        if self.sport > 0:
+            match = rule.create_match(self.protocol)
+            match.sport = str(self.sport)
+        if self.dport > 0:
+            match = rule.create_match(self.protocol)
+            match.dport = str(self.dport)
         rule.target = iptc.Target(rule, '')
-        if not test_rule_exists(chain_name, rule):
-            chain.insert_rule(rule)
+
+        self.rule = rule
+
+    def add_to_chain(self, chain_name):
+        self.chain_name.append(chain_name)
+        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
+        if not test_rule_exists(chain_name, self.rule):
+            chain.insert_rule(self.rule)
 
 
-test = Rule('TEST_out', 'OUTPUT', '10.93.12.0/24', '10.93.12.0/24', 80)
+test = Rule('OUTPUT', dst_net='10.93.12.0/24',protocol='tcp', dport=80, sport=25, )
+test.add_to_chain('TEST_in')
 
 
-import helper
 def print_rules(chain_name, convert_units = True):
     print '*'*30
     print '*{:^28}*'.format(chain_name)
