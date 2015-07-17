@@ -37,54 +37,54 @@ def create_rule_set(name, dst_port_list=(), src_port_list=(), dst_addr_list=(), 
     return all_chains
 
 
+input_rules = []
+output_rules = []
+in_out_rules = []
+
 class Rule_Group(object):
 
-    def __init__(self, name, dst_port_list=(), src_port_list=(), dst_addr_list=(), src_addr_list=()):
+    def __init__(self, name, input_rules=(), output_rules=(), in_out_rules=()):
 
         self.name = name
         self.name_in = name + '_in'
         self.name_out = name + '_out'
-        self.name_port = name + '_port'
-        self.dst_port_list = list(dst_port_list)
-        self.src_port_list = list(src_port_list)
-        self.dst_addr_list = list(dst_addr_list)
-        self.src_addr_list = list(src_addr_list)
+        self.name_in_out = name + '_in_out'
+        self.input_rules = list(input_rules)
+        self.output_rules = list(output_rules)
+        self.in_out_rules = list(in_out_rules)
 
         self.chains = []
-        self.input_rules = []
-        self.output_rules = []
-        self.port_rules = []
-
         self._create_group()
 
     def _create_group(self):
 
-        if len(self.dst_addr_list) > 0:
+        if len(self.output_rules) > 0:
             chains.create_chain(self.name_out)
             rules.redirect_chain1_to_chain2('OUTPUT', self.name_out)
             self.chains.append(self.name_out)
 
-        if len(self.src_addr_list) > 0:
+            for r in self.output_rules:
+                r.add_to_chain(self.name_out)
+
+        if len(self.input_rules) > 0:
             chains.create_chain(self.name_in)
             rules.redirect_chain1_to_chain2('INPUT', self.name_in)
             self.chains.append(self.name_in)
 
-        if len(self.dst_port_list) > 0 or len(self.src_port_list) > 0:
-            chains.create_chain(self.name_port)
-            rules.redirect_chain1_to_chain2('OUTPUT', self.name_port)
-            rules.redirect_chain1_to_chain2('INPUT', self.name_port)
-            self.chains.append(self.name_port)
+            for r in self.input_rules:
+                r.add_to_chain(self.name_in)
 
-            if len(self.dst_port_list) > 0:
-                pass
+        if len(self.in_out_rules) > 0:
+            chains.create_chain(self.name_in_out)
+            rules.redirect_chain1_to_chain2('OUTPUT', self.name_in_out)
+            rules.redirect_chain1_to_chain2('INPUT', self.name_in_out)
+            self.chains.append(self.name_in_out)
 
-            if len(self.src_port_list) > 0:
-                pass
-
-        return
+            for r in self.in_out_rules:
+                r.add_to_chain(self.name_in_out)
 
     def add_rule(self, rule, chain):
-        return
+        rule.add_to_chain(chain)
 
     def delete_rule(self, rule, chain):
         return

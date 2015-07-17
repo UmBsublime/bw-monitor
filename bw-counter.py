@@ -30,8 +30,18 @@ def main():
     #rules.redirect_chain1_to_chain2('OUTPUT', chain_name)
     #rules.redirect_chain1_to_chain2('INPUT', chain_name)
 
-    all_chains = rule_set.create_rule_set('TEST', (22,80,443), (22,80,443),('192.168.1.0/24',),('192.168.1.0/24',))
-    for i in all_chains:
-        rules.print_rules(i)
+
+    dicom_in = rules.Rule(protocol= 'tcp', sport=5000)
+    dicom_out = rules.Rule(protocol= 'tcp', dport=5000)
+
+    http = rules.Rule(dport=80, sport=80)
+    ssh = rules.Rule(dport=22)
+
+    rule_group = rule_set.Rule_Group('TEST',(dicom_in,), (dicom_out,), (http,))
+
+    rule_group.add_rule(ssh, 'TEST_in_out')
+    #all_chains = rule_set.create_rule_set('TEST', (22,80,443), (22,80,443),('192.168.1.0/24',),('192.168.1.0/24',))
+    #for i in all_chains:
+    #    rules.print_rules(i)
 if __name__ == '__main__':
     main()

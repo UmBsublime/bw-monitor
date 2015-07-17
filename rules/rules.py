@@ -1,8 +1,8 @@
 import iptc
 
 
-#from chains.chains import  get_chain_counters
-#import helper
+from chains.chains import  get_chain_counters
+import helper
 table = iptc.Table(iptc.Table.FILTER)
 
 def test_rule_exists(chain_name, rule):
@@ -75,13 +75,9 @@ def src_ip_rule(chain_name, ip):
 
 class Rule():
 
-    def __init__(self, direction, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+    def __init__(self, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
 
-        if not isinstance(direction, str):
-            raise TypeError
-        else:
-            if direction.upper() != 'INPUT' and direction.upper() != 'OUTPUT':
-                raise TypeError
+
         if not isinstance(src_net, str):
             raise TypeError
         if not isinstance(dst_net, str):
@@ -91,7 +87,6 @@ class Rule():
         if not isinstance(dport, int):
             raise TypeError
 
-        self.direction = direction
         self.src_net = src_net
         self.dst_net = dst_net
         self.sport = sport
@@ -118,10 +113,6 @@ class Rule():
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
         if not test_rule_exists(chain_name, self.rule):
             chain.insert_rule(self.rule)
-
-
-test = Rule('OUTPUT', dst_net='10.93.12.0/24',protocol='tcp', dport=80, sport=25, )
-test.add_to_chain('TEST_in')
 
 
 def print_rules(chain_name, convert_units = True):
@@ -159,3 +150,11 @@ def print_rules(chain_name, convert_units = True):
         i += 1
 
 
+def main():
+
+    test = Rule('OUTPUT', dst_net='10.93.12.0/24',protocol='tcp', dport=80, sport=25, )
+    test.add_to_chain('TEST_in')
+
+
+if __name__ == '__main__':
+    main()
