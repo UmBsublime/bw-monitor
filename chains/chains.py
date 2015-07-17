@@ -54,5 +54,3 @@ def flush_chain_rules(name):
         chain.flush()
         return True
     return False
-
-

@@ -43,45 +43,37 @@ in_out_rules = []
 
 class Rule_Group(object):
 
-    def __init__(self, name, input_rules=(), output_rules=(), in_out_rules=()):
+    def __init__(self, name, group_rules =()):
 
         self.name = name
         self.name_in = name + '_in'
         self.name_out = name + '_out'
         self.name_in_out = name + '_in_out'
-        self.input_rules = list(input_rules)
-        self.output_rules = list(output_rules)
-        self.in_out_rules = list(in_out_rules)
+        self.group_rules = group_rules
 
         self.chains = []
         self._create_group()
 
     def _create_group(self):
+        for rule in self.group_rules:
+            if type(rule).__name__ == 'Output_Rule':
+                chains.create_chain(self.name_out)
+                rules.redirect_chain1_to_chain2('OUTPUT', self.name_out)
+                self.chains.append(self.name_out)
+                rule.add_to_chain(self.name_out)
 
-        if len(self.output_rules) > 0:
-            chains.create_chain(self.name_out)
-            rules.redirect_chain1_to_chain2('OUTPUT', self.name_out)
-            self.chains.append(self.name_out)
+            if type(rule).__name__ == 'Input_Rule':
+                chains.create_chain(self.name_in)
+                rules.redirect_chain1_to_chain2('INPUT', self.name_in)
+                self.chains.append(self.name_in)
+                rule.add_to_chain(self.name_in)
 
-            for r in self.output_rules:
-                r.add_to_chain(self.name_out)
-
-        if len(self.input_rules) > 0:
-            chains.create_chain(self.name_in)
-            rules.redirect_chain1_to_chain2('INPUT', self.name_in)
-            self.chains.append(self.name_in)
-
-            for r in self.input_rules:
-                r.add_to_chain(self.name_in)
-
-        if len(self.in_out_rules) > 0:
-            chains.create_chain(self.name_in_out)
-            rules.redirect_chain1_to_chain2('OUTPUT', self.name_in_out)
-            rules.redirect_chain1_to_chain2('INPUT', self.name_in_out)
-            self.chains.append(self.name_in_out)
-
-            for r in self.in_out_rules:
-                r.add_to_chain(self.name_in_out)
+            if type(rule).__name__ == 'In_Out_Rule':
+                chains.create_chain(self.name_in_out)
+                rules.redirect_chain1_to_chain2('OUTPUT', self.name_in_out)
+                rules.redirect_chain1_to_chain2('INPUT', self.name_in_out)
+                self.chains.append(self.name_in_out)
+                rule.add_to_chain(self.name_in_out)
 
     def add_rule(self, rule, chain):
         rule.add_to_chain(chain)
@@ -109,4 +101,3 @@ class Rule_Group(object):
 
     def get_chain_counters(self):
         return
-

@@ -73,9 +73,10 @@ def src_ip_rule(chain_name, ip):
         return True
     return False
 
-class Rule():
 
-    def __init__(self, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+class Rule(object):
+
+    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
 
 
         if not isinstance(src_net, str):
@@ -86,7 +87,7 @@ class Rule():
             raise TypeError
         if not isinstance(dport, int):
             raise TypeError
-
+        self.name = name
         self.src_net = src_net
         self.dst_net = dst_net
         self.sport = sport
@@ -113,6 +114,22 @@ class Rule():
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
         if not test_rule_exists(chain_name, self.rule):
             chain.insert_rule(self.rule)
+
+
+class Input_Rule(Rule):
+
+    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+        super(Input_Rule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
+
+
+class Output_Rule(Rule):
+    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+        super(Output_Rule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
+
+
+class In_Out_Rule(Rule):
+    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+        super(In_Out_Rule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
 
 
 def print_rules(chain_name, convert_units = True):
