@@ -75,29 +75,35 @@ class Rule_Group(object):
                 self.chains.append(self.name_in_out)
                 rule.add_to_chain(self.name_in_out)
 
-    def add_rule(self, rule, chain):
-        rule.add_to_chain(chain)
+    def add_rule(self, rule, chain_name):
+        if chain_name in self.chains:
+            rule.add_to_chain(chain_name)
 
-    def delete_rule(self, rule, chain):
+    def delete_rule(self, rule, chain_name):
         return
 
     def get_rules(self):
-        return
+        return self.group_rules
 
-    def clear_chain(self):
-        return
+    def clear_chain(self, chain_name):
+        if chain_name in self.chains:
+            chains.flush_chain_rules(chain_name)
 
     def clear_all(self):
-        return
+        for c in self.chains:
+            self.clear_chain(c)
 
-    def reset_chain_counters(self):
-        return
+    def reset_chain_counters(self, chain_name):
+        if chain_name in self.chains:
+            chains.reset_chain_counters(chain_name)
 
     def reset_all_counters(self):
-        return
+        for c in self.chains:
+            chains.reset_chain_counters(c)
 
-    def get_chain_counter(self, chain):
-        return
+    def get_chain_counter(self, chain_name):
+        if chain_name in self.chains:
+            return chains.get_chain_counters(chain_name)
 
     def get_chain_counters(self):
         return
