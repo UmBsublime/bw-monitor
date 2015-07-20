@@ -1,47 +1,8 @@
 from chains import chains
 import rules
 
-def create_rule_set(name, dst_port_list=(), src_port_list=(), dst_addr_list=(), src_addr_list=()):
-    all_chains = []
-    if len(dst_addr_list) > 0:
-        chain_name = name + '_out'
-        all_chains.append(chain_name)
-        chains.create_chain(chain_name)
-        rules.redirect_chain1_to_chain2('OUTPUT', chain_name)
 
-        for ip in dst_addr_list:
-            rules.dst_ip_rule(chain_name, ip)
-
-    if len(src_addr_list) > 0:
-        chain_name = name + '_in'
-        all_chains.append(chain_name)
-        chains.create_chain(chain_name)
-        rules.redirect_chain1_to_chain2('INPUT', chain_name)
-
-        for ip in src_addr_list:
-            rules.src_ip_rule(chain_name, ip)
-
-    if len(dst_port_list) > 0 or len(src_port_list) > 0:
-        chain_name = name + '_port'
-        all_chains.append(chain_name)
-        chains.create_chain(chain_name)
-        rules.redirect_chain1_to_chain2('OUTPUT', chain_name)
-        rules.redirect_chain1_to_chain2('INPUT', chain_name)
-
-        if len(dst_port_list) > 0:
-            for port in dst_port_list:
-                rules.dst_tcp_port_rule(chain_name, port)
-        if len(src_port_list) > 0:
-            for port in src_port_list:
-                rules.src_tcp_port_rule(chain_name, port)
-    return all_chains
-
-
-input_rules = []
-output_rules = []
-in_out_rules = []
-
-class Rule_Group(object):
+class RuleGroup(object):
 
     def __init__(self, name, group_rules=None):
 
@@ -78,24 +39,25 @@ class Rule_Group(object):
         from pprint import pprint
         print '* ADDING* ' + str(rule)
         print '*BEFORE*'
-        pprint (self.group_rules)
-        if type(rule) is rules.Input_Rule:
+        pprint(self.group_rules)
+        if type(rule) is rules.InputRule:
             self.group_rules['Input'].append(rule)
             rule.add_to_chain(self.name_in)
-        if type(rule) is rules.Output_Rule:
+        if type(rule) is rules.OutputRule:
             self.group_rules['Output'].append(rule)
             rule.add_to_chain(self.name_in_out)
-        if type(rule) is rules.In_Out_Rule:
+        if type(rule) is rules.InOutRule:
             self.group_rules['In_Out'].append(rule)
             rule.add_to_chain(self.name_in_out)
 
         print '*AFTER*'
-        pprint (self.group_rules)
+        pprint(self.group_rules)
+
     def delete_rule(self, rule):
         from pprint import pprint
         print '* DELETING* ' + str(rule)
         print '*BEFORE*'
-        pprint (self.group_rules)
+        pprint(self.group_rules)
         if rule.remove_from_chain(self.name_in):
             self.group_rules['Input'].remove(rule)
             rule.remove_from_chain(self.name_in)
@@ -106,7 +68,7 @@ class Rule_Group(object):
             self.group_rules['In_Out'].remove(rule)
             rule.remove_from_chain(self.name_in_out)
         print '*AFTER*'
-        pprint (self.group_rules)
+        pprint(self.group_rules)
 
     def get_rules(self):
         return self.group_rules
@@ -132,7 +94,7 @@ class Rule_Group(object):
             return chains.get_chain_counters(chain_name)
 
     def get_chain_counters(self):
-        return
+        pass
 
     def get_chain_names(self):
         return self.chains

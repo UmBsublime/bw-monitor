@@ -32,18 +32,17 @@ def main():
 
 
 
-    dicom_in = rules.Input_Rule('DICOM In',protocol= 'tcp', sport=5000)
-    dicom_out = rules.Output_Rule('DICOM Out', protocol= 'tcp', dport=5000)
-    http_in = rules.In_Out_Rule('HTTP In', sport=80)
-    http_out = rules.In_Out_Rule('HTTP Out', dport=80)
+    dicom_in = rules.InputRule('DICOM In',protocol= 'tcp', sport=5000)
+    dicom_out = rules.OutputRule('DICOM Out', protocol= 'tcp', dport=5000)
+    http_in = rules.InOutRule('HTTP In', sport=80)
+    http_out = rules.InOutRule('HTTP Out', dport=80)
 
-    dicom_rules = (dicom_in, dicom_out, http_in, http_out)
     dicom_rules = {'Input': [dicom_in],
                    'Output': [dicom_out],
                    'In_Out': [http_in, http_out]}
-    rule_group = rule_set.Rule_Group('TEST',dicom_rules)
+    rule_group = rule_set.RuleGroup('TEST',dicom_rules)
 
-    ssh = rules.In_Out_Rule('SSH',dport=22)
+    ssh = rules.InOutRule('SSH',dport=22)
     #rule_group.delete_rule(ssh)
     rule_group.add_rule(ssh, )
 

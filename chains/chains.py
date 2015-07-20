@@ -2,6 +2,7 @@ import iptc
 
 table = iptc.Table(iptc.Table.FILTER)
 
+
 def check_chain_exists(name):
     for i in table.chains:
         if name == i.name:
@@ -17,7 +18,7 @@ def get_chain(name):
     return None
 
 
-def create_chain(name, policy='ACCEPT'):
+def create_chain(name):
     if not check_chain_exists(name):
         table.create_chain(name)
         return True
@@ -29,7 +30,6 @@ def remove_chain(name):
         table.delete_chain(name)
         return True
     return False
-
 
 
 def get_chain_counters(name):

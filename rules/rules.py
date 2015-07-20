@@ -1,9 +1,10 @@
 import iptc
 
 
-from chains.chains import  get_chain_counters
+from chains.chains import get_chain_counters
 import helper
 table = iptc.Table(iptc.Table.FILTER)
+
 
 def test_rule_exists(chain_name, rule):
     for chain in table.chains:
@@ -12,6 +13,7 @@ def test_rule_exists(chain_name, rule):
                 if r == rule:
                     return True
     return False
+
 
 def redirect_chain1_to_chain2(chain1, chain2):
     chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain1)
@@ -74,10 +76,44 @@ def src_ip_rule(chain_name, ip):
     return False
 
 
+def print_rules(chain_name, convert_units=True):
+    print '*'*30
+    print '*{:^28}*'.format(chain_name)
+    print '*'*30
+    rule_format = '{src_net} --> {dst_net} {match}\npkts: {packets:<7}size: {bytes_count:<7}\n---'
+    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
+
+    counters = get_chain_counters(chain_name)
+    i = 0
+    for r in chain.rules:
+        packets, bytes_count = counters[i]
+        src_net = r.src
+        dst_net = r.dst
+
+        if convert_units:
+            bytes_count = helper.convert_to_smallest_repr(bytes_count)
+            src_net, subnet = src_net.split('/')
+            src_net = src_net + '/' + helper.convert_submask_to_cidr(subnet)
+            dst_net, subnet = dst_net.split('/')
+            dst_net = dst_net + '/' + helper.convert_submask_to_cidr(subnet)
+
+        match = "match: "
+        for m in r.matches:
+            match += m.name
+            if m.sport:
+                match += " src port " + m.sport
+            elif m.dport:
+                match += " dst port " + m.dport
+        if match == 'match: ':
+            match += '*'
+
+        print rule_format.format(packets=packets, bytes_count=bytes_count, src_net=src_net, dst_net=dst_net, match=match)
+        i += 1
+
+
 class Rule(object):
 
-    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
-
+    def __init__(self, name, protocol='tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
 
         if not isinstance(src_net, str):
             raise TypeError
@@ -124,61 +160,24 @@ class Rule(object):
         return False
 
 
-class Input_Rule(Rule):
+class InputRule(Rule):
 
-    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
-        super(Input_Rule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
-
-
-class Output_Rule(Rule):
-    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
-        super(Output_Rule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
+    def __init__(self, name, protocol='tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+        super(InputRule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
 
 
-class In_Out_Rule(Rule):
-    def __init__(self, name, protocol= 'tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
-        super(In_Out_Rule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
+class OutputRule(Rule):
+    def __init__(self, name, protocol='tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+        super(OutputRule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
 
 
-def print_rules(chain_name, convert_units = True):
-    print '*'*30
-    print '*{:^28}*'.format(chain_name)
-    print '*'*30
-    rule_format = '{src_net} --> {dst_net} {match}\npkts: {packets:<7}size: {bytes:<7}\n---'
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-
-    counters = get_chain_counters(chain_name)
-    i = 0
-    for r in chain.rules:
-        packets, bytes = counters[i]
-        src_net =  r.src
-        dst_net = r.dst
-
-        if convert_units:
-            bytes = helper.convert_to_smallest_repr(bytes)
-            src_net, subnet = src_net.split('/')
-            src_net = src_net + '/' + helper.convert_submask_to_cidr(subnet)
-            dst_net, subnet = dst_net.split('/')
-            dst_net = dst_net + '/' + helper.convert_submask_to_cidr(subnet)
-
-        match = "match: "
-        for m in r.matches:
-            match += m.name
-            if m.sport:
-                match += " src port " + m.sport
-            elif m.dport:
-                match += " dst port " + m.dport
-        if match == 'match: ':
-            match += '*'
-
-        print rule_format.format(packets=packets, bytes=bytes, src_net=src_net, dst_net=dst_net, match=match)
-        i += 1
+class InOutRule(Rule):
+    def __init__(self, name, protocol='tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
+        super(InOutRule, self).__init__(name, protocol, src_net, dst_net, dport, sport)
 
 
 def main():
-
-    test = Rule('OUTPUT', dst_net='10.93.12.0/24',protocol='tcp', dport=80, sport=25, )
-    test.add_to_chain('TEST_in')
+    pass
 
 
 if __name__ == '__main__':
