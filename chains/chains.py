@@ -8,12 +8,14 @@ def check_chain_exists(name):
             return True
     return False
 
+
 def get_chain(name):
     if check_chain_exists(name):
         for i in table.chains:
             if name == i.name:
                 return i
     return None
+
 
 def create_chain(name, policy='ACCEPT'):
     if not check_chain_exists(name):
