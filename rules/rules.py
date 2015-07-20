@@ -120,6 +120,8 @@ class Rule(object):
         if test_rule_exists(chain_name, self.rule):
             c_chain.delete_rule(self.rule)
             self.chain_name.remove(chain_name)
+            return True
+        return False
 
 
 class Input_Rule(Rule):
