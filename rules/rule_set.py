@@ -79,8 +79,10 @@ class Rule_Group(object):
         if chain_name in self.chains:
             rule.add_to_chain(chain_name)
 
-    def delete_rule(self, rule, chain_name):
-        return
+    def delete_rule(self, rule):
+
+        for c_chain in self.chains:
+            rule.remove_from_chain(c_chain)
 
     def get_rules(self):
         return self.group_rules

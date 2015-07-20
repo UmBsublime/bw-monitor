@@ -115,6 +115,12 @@ class Rule(object):
         if not test_rule_exists(chain_name, self.rule):
             chain.insert_rule(self.rule)
 
+    def remove_from_chain(self, chain_name):
+        c_chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
+        if test_rule_exists(chain_name, self.rule):
+            c_chain.delete_rule(self.rule)
+            self.chain_name.remove(chain_name)
+
 
 class Input_Rule(Rule):
 

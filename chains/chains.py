@@ -29,13 +29,13 @@ def remove_chain(name):
     return False
 
 
+
 def get_chain_counters(name):
     chain = get_chain(name)
     if chain:
         counters = []
         for r in chain.rules:
             counters.append(r.get_counters())
-
         return counters
     return None
 

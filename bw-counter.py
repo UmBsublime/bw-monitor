@@ -17,7 +17,11 @@ def main():
     rule_group = rule_set.Rule_Group('TEST',dicom_rules)
 
     ssh = rules.In_Out_Rule('SSH',dport=22)
+    rule_group.delete_rule(ssh)
     rule_group.add_rule(ssh, 'TEST_in_out')
+
+    rule_group.delete_rule(ssh)
+    rule_group.delete_rule(http_in)
 
 if __name__ == '__main__':
     main()
