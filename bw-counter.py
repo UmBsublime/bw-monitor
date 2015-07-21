@@ -41,15 +41,20 @@ def main():
     ssh = rules.InOutRule('SSH',dport=22)
     rule_group.add_rule(ssh)
 
-    rule_group.delete_rule(ssh)
-    rule_group.delete_rule(http_in)
-    rule_group.delete_rule(http_out)
-    rule_group.delete_rule(dicom_in)
-    rule_group.delete_rule(dicom_out)
+    #rule_group.delete_rule(ssh)
+    #rule_group.delete_rule(http_in)
+    #rule_group.delete_rule(http_out)
+    #rule_group.delete_rule(dicom_in)
+    #rule_group.delete_rule(dicom_out)
 
 
-    print '--------------'
-    print_counter(rule_group)
+
+    from time import sleep
+    while True:
+        print '--------------'
+        #print_counter(rule_group)
+        print chains.get_chain_counters('TEST_in_out')
+        sleep(5)
 
 if __name__ == '__main__':
     main()
