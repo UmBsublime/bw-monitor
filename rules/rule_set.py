@@ -37,37 +37,55 @@ class RuleGroup(object):
 
     def add_rule(self, rule):
         from pprint import pprint
-        print '* ADDING* ' + str(rule)
-        print '*BEFORE*'
+        print '--------------\n* ADDING * ' + str(rule)
+        print '=== BEFORE'
         pprint(self.group_rules)
+
         if type(rule) is rules.InputRule:
+            if not chains.check_chain_exists(self.name_in):
+                chains.create_chain(self.name_in)
             self.group_rules['Input'].append(rule)
             rule.add_to_chain(self.name_in)
+
         if type(rule) is rules.OutputRule:
+            if not chains.check_chain_exists(self.name_out):
+                chains.create_chain(self.name_out)
             self.group_rules['Output'].append(rule)
-            rule.add_to_chain(self.name_in_out)
+            rule.add_to_chain(self.name_out)
+
         if type(rule) is rules.InOutRule:
+            if not chains.check_chain_exists(self.name_in_out):
+                chains.create_chain(self.name_in_out)
             self.group_rules['In_Out'].append(rule)
             rule.add_to_chain(self.name_in_out)
 
-        print '*AFTER*'
+        print '=== AFTER'
         pprint(self.group_rules)
 
     def delete_rule(self, rule):
         from pprint import pprint
-        print '* DELETING* ' + str(rule)
-        print '*BEFORE*'
+        print '--------------\n* DELETING * ' + str(rule)
+        print '=== BEFORE'
         pprint(self.group_rules)
         if rule.remove_from_chain(self.name_in):
             self.group_rules['Input'].remove(rule)
             rule.remove_from_chain(self.name_in)
+            if len(self.group_rules['Input']) == 0:
+                chains.remove_chain(self.name_in)
+
         if rule.remove_from_chain(self.name_out):
             self.group_rules['Output'].remove(rule)
             rule.remove_from_chain(self.name_out)
+            if len(self.group_rules['Output']) == 0:
+                chains.remove_chain(self.name_out)
+
         if rule.remove_from_chain(self.name_in_out):
             self.group_rules['In_Out'].remove(rule)
             rule.remove_from_chain(self.name_in_out)
-        print '*AFTER*'
+            if len(self.group_rules['In_Out']) == 0:
+                chains.remove_chain(self.name_in_out)
+
+        print '=== AFTER'
         pprint(self.group_rules)
 
     def get_rules(self):

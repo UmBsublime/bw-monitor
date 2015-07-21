@@ -28,10 +28,6 @@ def print_counter(rule_group):
 def main():
     print ':) main brah'
 
-
-
-
-
     dicom_in = rules.InputRule('DICOM In',protocol= 'tcp', sport=5000)
     dicom_out = rules.OutputRule('DICOM Out', protocol= 'tcp', dport=5000)
     http_in = rules.InOutRule('HTTP In', sport=80)
@@ -39,16 +35,20 @@ def main():
 
     dicom_rules = {'Input': [dicom_in],
                    'Output': [dicom_out],
-                   'In_Out': [http_in, http_out]}
+                   'In_Out': [http_out, http_in]}
     rule_group = rule_set.RuleGroup('TEST',dicom_rules)
 
     ssh = rules.InOutRule('SSH',dport=22)
-    #rule_group.delete_rule(ssh)
-    rule_group.add_rule(ssh, )
+    rule_group.add_rule(ssh)
 
-    #rule_group.delete_rule(ssh)
+    rule_group.delete_rule(ssh)
     rule_group.delete_rule(http_in)
-    print rule_group.get_chain_counter('TEST_in_out')
+    rule_group.delete_rule(http_out)
+    rule_group.delete_rule(dicom_in)
+    rule_group.delete_rule(dicom_out)
+
+
+    print '--------------'
     print_counter(rule_group)
 
 if __name__ == '__main__':
