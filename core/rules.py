@@ -1,7 +1,5 @@
 import iptc
 
-
-from chains import get_chain_counters
 import helper
 table = iptc.Table(iptc.Table.FILTER)
 
@@ -12,67 +10,6 @@ def test_rule_exists(chain_name, rule):
             for r in chain.rules:
                 if r == rule:
                     return True
-    return False
-
-
-def redirect_chain1_to_chain2(chain1, chain2):
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain1)
-    rule = iptc.Rule()
-    target = iptc.Target(rule, chain2)
-    rule.target = target
-    if not test_rule_exists(chain1, rule):
-        chain.insert_rule(rule)
-        return True
-    return False
-
-
-def dst_tcp_port_rule(chain_name, port):
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-    rule = iptc.Rule()
-    rule.protocol = 'tcp'
-    match = rule.create_match('tcp')
-    match.dport = str(port)
-    rule.target = iptc.Target(rule, '')
-    if not test_rule_exists(chain_name, rule):
-        chain.insert_rule(rule)
-        return True
-    return False
-
-
-def src_tcp_port_rule(chain_name, port):
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-    rule = iptc.Rule()
-    rule.protocol = 'tcp'
-    match = rule.create_match('tcp')
-    match.sport = str(port)
-    rule.target = iptc.Target(rule, '')
-    if not test_rule_exists(chain_name, rule):
-        chain.insert_rule(rule)
-        return True
-    return False
-
-
-def dst_ip_rule(chain_name, ip):
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-    rule = iptc.Rule()
-    rule.protocol = 'tcp'
-    rule.dst = ip
-    rule.target = iptc.Target(rule, '')
-    if not test_rule_exists(chain_name, rule):
-        chain.insert_rule(rule)
-        return True
-    return False
-
-
-def src_ip_rule(chain_name, ip):
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-    rule = iptc.Rule()
-    rule.protocol = 'tcp'
-    rule.src = ip
-    rule.target = iptc.Target(rule, '')
-    if not test_rule_exists(chain_name, rule):
-        chain.insert_rule(rule)
-        return True
     return False
 
 
