@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import chains
-import rules, rule_set
+from core import chains
+from core import rules, rule_set
 
 def print_counter(rule_group):
     all_counters = {}
