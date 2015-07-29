@@ -58,18 +58,6 @@ def flush_chain_rules(name):
     return False
 
 
-
-def redirect_chain1_to_chain2(chain1, chain2):
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain1)
-    rule = iptc.Rule()
-    target = iptc.Target(rule, chain2)
-    rule.target = target
-    if not test_rule_exists(chain1, rule):
-        chain.insert_rule(rule)
-        return True
-    return False
-
-
 class Chain(object):
 
     def __init__(self, name):
@@ -151,5 +139,5 @@ if __name__ == '__main__':
     t.reset_counters()
     t.flush_rules()
     print t.get_chain()
-    #t.remove()
-    #t.remove()
+    # t.remove()
+    # t.remove()
