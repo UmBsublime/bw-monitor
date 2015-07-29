@@ -1,0 +1,29 @@
+# todo
+
+---
+
+refactor to be used like this
+
+counter_group('Dicom')
+    |--Chain_in
+        |--Rule1
+        |--Rule2
+    |--Chain_out
+        |--Rule1
+        |--Rule2
+    |--Chain_in_out
+        |--Rule1
+        |--Rule2
+
+counter_group('HL7')
+    |--Chain_in
+        |--Rule1
+        |--Rule2
+    |--Chain_out
+        |--Rule1
+        |--Rule2
+    |--Chain_in_out
+        |--Rule1
+        |--Rule2
+
+---

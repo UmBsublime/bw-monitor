@@ -129,15 +129,29 @@ class Chain(object):
     def flush_rules(self):
         self.chain.flush()
 
+    def add_rule(self, new_rule):
+        new_rule.add_to_chain(self.name)
+
+    def delete_rule(self, del_rule):
+        del_rule.remove_from_chain(self.name)
 
 if __name__ == '__main__':
+    import rules
+
+    t_rule = rules.Rule('http In',protocol= 'tcp', sport=80)
+    t_rule2 = rules.Rule('http In',protocol= 'tcp', dport=80)
     t = Chain('banana')
+
+
     t.add_reference('OUTPUT')
     t.add_reference('INPUT')
-    t.add_reference('INPUT')
+    #t.add_reference('INPUT')
+    t.add_rule(t_rule)
+    t.add_rule(t_rule2)
     print t.get_counters()
     t.reset_counters()
-    t.flush_rules()
+    #t.delete_rule(t_rule)
+    #t.flush_rules()
     print t.get_chain()
     # t.remove()
     # t.remove()
