@@ -1,29 +1,12 @@
 # todo
 
----
 
-refactor to be used like this
 
-counter_group('Dicom')
-    |--Chain_in
-        |--Rule1
-        |--Rule2
-    |--Chain_out
-        |--Rule1
-        |--Rule2
-    |--Chain_in_out
-        |--Rule1
-        |--Rule2
 
-counter_group('HL7')
-    |--Chain_in
-        |--Rule1
-        |--Rule2
-    |--Chain_out
-        |--Rule1
-        |--Rule2
-    |--Chain_in_out
-        |--Rule1
-        |--Rule2
+make Rules a function and InputRule/OutR/DualR a wrapper of that function.
 
----
+Chain will stay a wrapper around the iptc.chain, with the added bonus of managing rules that go in or out.
+Chain should also be able to populate its rule list based the actual state of iptables.
+
+Counter will manage as many chains as necessary and manage the references to those chains as well as providing
+fine grained access to the all counters available

@@ -7,6 +7,7 @@ class Chain(object):
     def __init__(self, name):
         self.name = name
         self.reference = []
+        self.rules = []
         self.create_chain()
 
     def _check_chain_exists(self):
@@ -69,8 +70,16 @@ class Chain(object):
 
     def get_counters(self):
         counters = []
-        for r in self.chain.rules:
-            counters.append(r.get_counters())
+
+        for r in self.rules:
+            result = {'counter':r.rule.get_counters(),
+                      'name': r.name,
+                      'dst_port': r.dport,
+                      'src_port': r.sport,
+                      'dst_net': r.dst_net,
+                      'src_net': r.src_net}
+            counters.append(result)
+
         return counters
 
     def reset_counters(self):
@@ -80,9 +89,11 @@ class Chain(object):
         self.chain.flush()
 
     def add_rule(self, new_rule):
+        self.rules.append(new_rule)
         new_rule.add_to_chain(self.name)
 
     def delete_rule(self, del_rule):
+        self.rules.remove(del_rule)
         del_rule.remove_from_chain(self.name)
 
 

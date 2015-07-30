@@ -55,9 +55,10 @@ class Counter(object):
         pass
 
     def get_counters(self):
-        result = {'In': self.input_chain.get_counters(),
-                  'Out': self.output_chain.get_counters(),
-                  'Dual': self.dual_chain.get_counters()}
+
+        result = {'in': self.input_chain.get_counters(),
+                  'out': self.output_chain.get_counters(),
+                  'dual': self.dual_chain.get_counters()}
         return result
 
     def flush_rules(self):
@@ -78,19 +79,21 @@ if __name__ == '__main__':
 
     dicom_in = rules.InputRule('DICOM In', protocol='tcp', sport=5000)
     dicom_out = rules.OutputRule('DICOM Out', protocol='tcp', dport=5000)
-    http_in = rules.InOutRule('HTTP In', sport=80)
+    http_in = rules.InputRule('HTTP In', sport=80)
+    http_out = rules.OutputRule('HTTP Out', dport=80)
 
 
     ssh = rules.InOutRule('SSH', sport=22)
-    test = Counter('test', [dicom_in, dicom_out, http_in])
+    test = Counter('test', [dicom_in, dicom_out, http_in, http_out])
     test.add_rule(ssh)
+    sleep(10)
     pprint(test.get_counters())
     #test.remove_rule(ssh)
-    test.reset_counters()
+    #test.reset_counters()
     #pprint(test.get_counters())
     #test.flush_rules()
     #pprint(test.get_counters())
     #sleep(2)
     #print(test.get_counters())
 
-    test.delete()
+    #test.delete()
