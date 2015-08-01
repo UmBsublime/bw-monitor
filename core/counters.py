@@ -55,7 +55,6 @@ class Counter(object):
         pass
 
     def get_counters(self):
-
         result = {'in': self.input_chain.get_counters(),
                   'out': self.output_chain.get_counters(),
                   'dual': self.dual_chain.get_counters()}
@@ -86,7 +85,7 @@ if __name__ == '__main__':
     ssh = rules.InOutRule('SSH', sport=22)
     test = Counter('test', [dicom_in, dicom_out, http_in, http_out])
     test.add_rule(ssh)
-    sleep(10)
+    #sleep(10)
     pprint(test.get_counters())
     #test.remove_rule(ssh)
     #test.reset_counters()

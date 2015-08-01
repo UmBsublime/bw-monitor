@@ -9,4 +9,4 @@ Chain will stay a wrapper around the iptc.chain, with the added bonus of managin
 Chain should also be able to populate its rule list based the actual state of iptables.
 
 Counter will manage as many chains as necessary and manage the references to those chains as well as providing
-fine grained access to the all counters available
+fine grained access to all the counters available
