@@ -4,14 +4,6 @@ import helper
 table = iptc.Table(iptc.Table.FILTER)
 
 
-def test_rule_exists(chain_name, rule):
-    for chain in table.chains:
-        if chain_name == chain.name:
-            for r in chain.rules:
-                if r == rule:
-                    return True
-    return False
-
 
 def print_rules(chain_name, convert_units=True):
     print '*'*30
@@ -48,6 +40,33 @@ def print_rules(chain_name, convert_units=True):
         i += 1
 
 
+
+
+def get_rule_spec(rule):
+    src_net = rule.src
+    dst_net = rule.dst
+    dport = rule.matches[0].dport
+    sport = rule.matches[0].sport
+
+    if dport == None:
+        dport = 0
+    if sport == None:
+        sport = 0
+
+
+    spec = {'src_net': src_net,
+            'dst_net': dst_net,
+            'dport': int(dport),
+            'sport': int(sport)}
+
+    return spec
+
+
+def wrap_existing_rule():
+    pass
+
+
+
 class Rule(object):
 
     def __init__(self, name, protocol='tcp', src_net='0.0.0.0/0', dst_net='0.0.0.0/0', dport=0, sport=0):
@@ -81,20 +100,6 @@ class Rule(object):
         rule.target = iptc.Target(rule, '')
 
         self.rule = rule
-
-    def add_to_chain(self, chain_name):
-        self.chain_name.append(chain_name)
-        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-        if not test_rule_exists(chain_name, self.rule):
-            chain.insert_rule(self.rule)
-
-    def remove_from_chain(self, chain_name):
-        c_chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-        if test_rule_exists(chain_name, self.rule):
-            c_chain.delete_rule(self.rule)
-            self.chain_name.remove(chain_name)
-            return True
-        return False
 
 
 class InputRule(Rule):

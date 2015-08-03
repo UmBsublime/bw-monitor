@@ -92,7 +92,7 @@ if __name__ == '__main__':
     #pprint(test.get_counters())
     #test.flush_rules()
     #pprint(test.get_counters())
-    #sleep(2)
-    #print(test.get_counters())
+    #sleep(20)
+    #pprint(test.get_counters())
 
     #test.delete()
