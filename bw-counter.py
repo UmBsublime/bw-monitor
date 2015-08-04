@@ -4,6 +4,7 @@ from core import chains, rules, counters
 
 def main():
     from pprint import pprint
+    from time import sleep
 
     print ':) main brah'
 
@@ -17,7 +18,10 @@ def main():
 
     ssh = rules.InOutRule('SSH',dport=22)
     dicom_counter.add_rule(ssh)
-    pprint(dicom_counter.get_counters())
+
+    while True:
+        pprint(dicom_counter.get_counters())
+        sleep(5)
 
 
 

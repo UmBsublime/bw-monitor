@@ -3,10 +3,8 @@
 
 
 
-make Rules a function and InputRule/OutR/DualR a wrapper of that function.
-
-Chain will stay a wrapper around the iptc.chain, with the added bonus of managing rules that go in or out.
-Chain should also be able to populate its rule list based the actual state of iptables.
+DONE Chain will stay a wrapper around the iptc.chain, with the added bonus of managing rules that go in or out.
+DONE Chain should also be able to populate its rule list based the actual state of iptables.
 
 Counter will manage as many chains as necessary and manage the references to those chains as well as providing
 fine grained access to all the counters available

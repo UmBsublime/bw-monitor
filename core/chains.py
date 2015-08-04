@@ -78,6 +78,7 @@ class Chain(object):
         table.delete_chain(self.name)
 
     def get_counters(self):
+        #table.refresh()
         counters = []
 
         for r in self.rules:
@@ -121,6 +122,7 @@ if __name__ == '__main__':
     import rules
     from time import sleep
     from pprint import pprint
+    import sys
 
     t_rule = rules.Rule('HTTP In', protocol='tcp', sport=80)
     t_rule2 = rules.Rule('HTTP Out', protocol='tcp', dport=80)
@@ -133,11 +135,13 @@ if __name__ == '__main__':
     #t.add_rule(t_rule)
     t.add_rule(t_rule2)
     t.add_rule(t_rule3)
-    #while True:
-    pprint (t.get_counters())
+    while True:
+        pprint (t.get_counters())
         #print 'ok'
         #print t.alt_get_counters()
-        #sleep(5)
+        sys.stdout.flush()
+
+        sleep(5)
         #print '\n\n'
     #t.reset_counters()
     # t.delete_rule(t_rule)
