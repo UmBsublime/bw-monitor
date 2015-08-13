@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from core import chains, rules, counters
+from core import chains, rules, counters, config_parser
 
 def main():
     from pprint import pprint
@@ -8,22 +8,28 @@ def main():
 
     print ':) main brah'
 
-    dicom_in = rules.InputRule('DICOM In',protocol= 'tcp', sport=5000)
-    dicom_out = rules.OutputRule('DICOM Out', protocol= 'tcp', dport=5000)
-    http_in = rules.InOutRule('HTTP In', sport=80)
-    http_out = rules.InOutRule('HTTP Out', dport=80)
+    dicom_rule_config = config_parser.parse_file('config/dicom.ini')
 
-    dicom_rules = [dicom_in, dicom_out, http_out, http_in]
+    dicom_rules = []
+    for r in dicom_rule_config:
+        d_chain = r.pop('chain', None)
+        if d_chain == 'in':
+            t = rules.InputRule(**r)
+        if d_chain == 'out':
+            t = rules.OutputRule(**r)
+
+        dicom_rules.append(t)
+
     dicom_counter = counters.Counter('TEST',dicom_rules)
 
-    ssh = rules.InOutRule('SSH',dport=22)
-    dicom_counter.add_rule(ssh)
-
+    counter = 0
     while True:
+        counter += 1
+        print 'Loop #: ' + str(counter)
+        print '*'*80
         pprint(dicom_counter.get_counters())
+        print '*'*80
         sleep(5)
-
-
 
 if __name__ == '__main__':
     main()

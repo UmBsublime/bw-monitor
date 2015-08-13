@@ -1,14 +1,28 @@
 import iptc
 import rules
+import helper
+from pprint import pprint
 table = iptc.Table(iptc.Table.FILTER)
 
 
 class Chain(object):
-    def __init__(self, name):
+    def __init__(self, name, reset=False):
+        self.reset = reset
         self.name = name
         self.reference = []
-        self.rules = []
         self._create_chain()
+
+    def _create_chain(self):
+        if self._check_chain_exists():
+            for i in table.chains:
+                if self.name == i.name:
+                    self.chain = i
+                    self._find_references()
+        else:
+            self.chain = table.create_chain(self.name)
+
+        if self.reset:
+            self.flush_rules()
 
     def _check_chain_exists(self):
         for i in table.chains:
@@ -55,39 +69,40 @@ class Chain(object):
                     if r == rule:
                         reference_chain.delete_rule(rule)
 
-    def _create_chain(self):
-        if self._check_chain_exists():
-            for i in table.chains:
-                if self.name == i.name:
-                    self.chain = i
-                    self._find_references()
-        else:
-            self.chain = table.create_chain(self.name)
-
-        for r in self.chain.rules:
-            spec = rules.get_rule_spec(r)
-            wr = rules.Rule('Auto Gen', sport=spec['sport'], dport=spec['dport'],
-                            src_net=spec['src_net'], dst_net=spec['dst_net'])
-            wr.rule = r
-            self.rules.append(wr)
-
     def remove(self):
         self.flush_rules()
         for ref in self.reference:
             self.remove_reference(ref)
         table.delete_chain(self.name)
 
-    def get_counters(self):
-        #table.refresh()
+    def get_counters(self, convert_units=True):
+        table.refresh()
         counters = []
+        for r in self.chain.rules:
 
-        for r in self.rules:
-            result = {'counter':r.rule.get_counters(),
-                      'name': r.name,
-                      'dst_port': r.dport,
-                      'src_port': r.sport,
-                      'dst_net': r.dst_net,
-                      'src_net': r.src_net}
+            spec = rules.get_rule_spec(r)
+            packets,totalBytes = r.get_counters()
+            name = spec['name']
+            sport = spec['sport']
+            dport = spec['dport']
+            dst_net = spec['dst_net']
+            src_net = spec['src_net']
+
+            if convert_units:
+                totalBytes = helper.convert_to_smallest_repr(totalBytes)
+                print totalBytes
+                src_sub = src_net.split('/')[1]
+                src_net = dst_net.split('/')[0] + '/' + helper.convert_submask_to_cidr(src_sub)
+                dst_sub = dst_net.split('/')[1]
+                dst_net = dst_net.split('/')[0] + '/' + helper.convert_submask_to_cidr(dst_sub)
+
+            result = {'packets': packets,
+                      'bytes': totalBytes,
+                      'name': name,
+                      'dst_port': dport,
+                      'src_port': sport,
+                      'dst_net': dst_net,
+                      'src_net': src_net}
             counters.append(result)
         return counters
 
@@ -99,32 +114,23 @@ class Chain(object):
 
     def add_rule(self, new_rule):
 
-        for r in self.rules:
-            spec = rules.get_rule_spec(r.rule)
-            n_spec = rules.get_rule_spec(new_rule.rule)
-            if spec['dst_net'] == n_spec['dst_net'] and spec['src_net'] == n_spec['src_net'] \
-                and spec['sport'] == n_spec['sport'] and spec['dport'] == n_spec['dport']:
-                r.name = new_rule.name
-                #r = new_rule
-                return
-
         if not self._rule_exists(new_rule.rule):
+            print 'Adding new rule with spec:'
+            pprint(rules.get_rule_spec(new_rule.rule))
             self.chain.insert_rule(new_rule.rule)
-            self.rules.append(new_rule)
 
     def delete_rule(self, del_rule):
         if self._rule_exists(del_rule.rule):
             self.chain.delete_rule(del_rule.rule)
-            self.rules.remove(del_rule)
 
 
 if __name__ == '__main__':
     import rules
     from time import sleep
-    from pprint import pprint
+
     import sys
 
-    t_rule = rules.Rule('HTTP In', protocol='tcp', sport=80)
+    t_rule = rules.Rule('HTTPS Out', protocol='tcp', dport=443)
     t_rule2 = rules.Rule('HTTP Out', protocol='tcp', dport=80)
     t_rule3 = rules.Rule('ssh', protocol='tcp', dport=22)
     t = Chain('test_out')
@@ -132,11 +138,12 @@ if __name__ == '__main__':
     t.add_reference('OUTPUT')
     t.add_reference('INPUT')
     # t.add_reference('INPUT')
-    #t.add_rule(t_rule)
+    t.add_rule(t_rule)
     t.add_rule(t_rule2)
     t.add_rule(t_rule3)
     while True:
         pprint (t.get_counters())
+        print '*'*80
         #print 'ok'
         #print t.alt_get_counters()
         sys.stdout.flush()

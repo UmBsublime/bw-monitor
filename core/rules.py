@@ -40,7 +40,11 @@ def print_rules(chain_name, convert_units=True):
         i += 1
 
 
-
+def get_rule_comment(r):
+    for m in r.matches:
+        if m.comment != None:
+            return m.comment
+    return None
 
 def get_rule_spec(rule):
     src_net = rule.src
@@ -48,16 +52,26 @@ def get_rule_spec(rule):
     dport = rule.matches[0].dport
     sport = rule.matches[0].sport
 
+    for m in rule.matches:
+        if m.dport != None:
+            dport = m.dport
+        if m.sport != None:
+            sport = m.sport
+        if m.comment != None:
+            name = m.comment
+
     if dport == None:
         dport = 0
     if sport == None:
         sport = 0
-
+    if name == None:
+        name = ''
 
     spec = {'src_net': src_net,
             'dst_net': dst_net,
             'dport': int(dport),
-            'sport': int(sport)}
+            'sport': int(sport),
+            'name': name}
 
     return spec
 
@@ -91,12 +105,16 @@ class Rule(object):
         rule.protocol = self.protocol
         rule.src = self.src_net
         rule.dst = self.dst_net
+
         if self.sport > 0:
             match = rule.create_match(self.protocol)
             match.sport = str(self.sport)
         if self.dport > 0:
             match = rule.create_match(self.protocol)
             match.dport = str(self.dport)
+
+        comt = rule.create_match("comment")
+        comt.comment = self.name
         rule.target = iptc.Target(rule, '')
 
         self.rule = rule
