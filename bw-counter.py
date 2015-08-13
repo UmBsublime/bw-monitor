@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-from core import chains, rules, counters, config_parser
+from pprint import pprint
+from time import sleep
+
+from core import rules, counters, config_parser
+
 
 def main():
-    from pprint import pprint
-    from time import sleep
 
     print ':) main brah'
 
@@ -20,7 +22,7 @@ def main():
 
         dicom_rules.append(t)
 
-    dicom_counter = counters.Counter('TEST',dicom_rules)
+    dicom_counter = counters.Counter('TEST', dicom_rules)
 
     counter = 0
     while True:

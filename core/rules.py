@@ -1,70 +1,34 @@
 import iptc
 
-import helper
 table = iptc.Table(iptc.Table.FILTER)
-
-
-
-def print_rules(chain_name, convert_units=True):
-    print '*'*30
-    print '*{:^28}*'.format(chain_name)
-    print '*'*30
-    rule_format = '{src_net} --> {dst_net} {match}\npkts: {packets:<7}size: {bytes_count:<7}\n---'
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), chain_name)
-
-    counters = get_chain_counters(chain_name)
-    i = 0
-    for r in chain.rules:
-        packets, bytes_count = counters[i]
-        src_net = r.src
-        dst_net = r.dst
-
-        if convert_units:
-            bytes_count = helper.convert_to_smallest_repr(bytes_count)
-            src_net, subnet = src_net.split('/')
-            src_net = src_net + '/' + helper.convert_submask_to_cidr(subnet)
-            dst_net, subnet = dst_net.split('/')
-            dst_net = dst_net + '/' + helper.convert_submask_to_cidr(subnet)
-
-        match = "match: "
-        for m in r.matches:
-            match += m.name
-            if m.sport:
-                match += " src port " + m.sport
-            elif m.dport:
-                match += " dst port " + m.dport
-        if match == 'match: ':
-            match += '*'
-
-        print rule_format.format(packets=packets, bytes_count=bytes_count, src_net=src_net, dst_net=dst_net, match=match)
-        i += 1
 
 
 def get_rule_comment(r):
     for m in r.matches:
-        if m.comment != None:
+        if m.comment is not None:
             return m.comment
     return None
+
 
 def get_rule_spec(rule):
     src_net = rule.src
     dst_net = rule.dst
     dport = rule.matches[0].dport
     sport = rule.matches[0].sport
-
+    name = None
     for m in rule.matches:
-        if m.dport != None:
+        if m.dport is not None:
             dport = m.dport
-        if m.sport != None:
+        if m.sport is not None:
             sport = m.sport
-        if m.comment != None:
+        if m.comment is not None:
             name = m.comment
 
-    if dport == None:
+    if dport is None:
         dport = 0
-    if sport == None:
+    if sport is None:
         sport = 0
-    if name == None:
+    if name is None:
         name = ''
 
     spec = {'src_net': src_net,
@@ -74,11 +38,6 @@ def get_rule_spec(rule):
             'name': name}
 
     return spec
-
-
-def wrap_existing_rule():
-    pass
-
 
 
 class Rule(object):

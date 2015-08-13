@@ -47,7 +47,6 @@ class Counter(object):
         if isinstance(del_rule, rules.InOutRule):
             self.dual_chain.delete_rule(del_rule)
 
-
     def reset_counters(self):
         self.input_chain.reset_counters()
         self.output_chain.reset_counters()
@@ -81,18 +80,17 @@ if __name__ == '__main__':
     http_in = rules.InputRule('HTTP In', sport=80)
     http_out = rules.OutputRule('HTTP Out', dport=80)
 
-
     ssh = rules.InOutRule('SSH', sport=22)
     test = Counter('test', [dicom_in, dicom_out, http_in, http_out])
     test.add_rule(ssh)
-    #sleep(10)
+    # sleep(10)
     pprint(test.get_counters())
-    #test.remove_rule(ssh)
-    #test.reset_counters()
-    #pprint(test.get_counters())
-    #test.flush_rules()
-    #pprint(test.get_counters())
-    #sleep(20)
-    #pprint(test.get_counters())
+    # test.remove_rule(ssh)
+    # test.reset_counters()
+    # pprint(test.get_counters())
+    # test.flush_rules()
+    # pprint(test.get_counters())
+    # sleep(20)
+    # pprint(test.get_counters())
 
-    #test.delete()
+    # test.delete()

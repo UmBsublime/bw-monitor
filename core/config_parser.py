@@ -1,13 +1,5 @@
 import ConfigParser
 
-from pprint import pprint
-
-config = ConfigParser.RawConfigParser()
-config.read('config/dicom.ini')
-print config.sections()
-
-
-
 
 def parse_file(filename):
     config = ConfigParser.RawConfigParser()

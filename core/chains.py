@@ -32,7 +32,7 @@ class Chain(object):
 
     def _find_references(self):
         for c in table.chains:
-            #if c.name == 'INPUT' or c.name == 'OUTPUT':
+            # if c.name == 'INPUT' or c.name == 'OUTPUT':
                 for r in c.rules:
                     if r.target.name == self.name:
                         self.reference.append(c.name)
@@ -81,7 +81,7 @@ class Chain(object):
         for r in self.chain.rules:
 
             spec = rules.get_rule_spec(r)
-            packets,totalBytes = r.get_counters()
+            packets, total_bytes = r.get_counters()
             name = spec['name']
             sport = spec['sport']
             dport = spec['dport']
@@ -89,15 +89,14 @@ class Chain(object):
             src_net = spec['src_net']
 
             if convert_units:
-                totalBytes = helper.convert_to_smallest_repr(totalBytes)
-                print totalBytes
+                total_bytes = helper.convert_to_smallest_repr(total_bytes)
                 src_sub = src_net.split('/')[1]
                 src_net = dst_net.split('/')[0] + '/' + helper.convert_submask_to_cidr(src_sub)
                 dst_sub = dst_net.split('/')[1]
                 dst_net = dst_net.split('/')[0] + '/' + helper.convert_submask_to_cidr(dst_sub)
 
             result = {'packets': packets,
-                      'bytes': totalBytes,
+                      'bytes': total_bytes,
                       'name': name,
                       'dst_port': dport,
                       'src_port': sport,
@@ -142,17 +141,17 @@ if __name__ == '__main__':
     t.add_rule(t_rule2)
     t.add_rule(t_rule3)
     while True:
-        pprint (t.get_counters())
+        pprint(t.get_counters())
         print '*'*80
-        #print 'ok'
-        #print t.alt_get_counters()
+        # print 'ok'
+        # print t.alt_get_counters()
         sys.stdout.flush()
 
         sleep(5)
-        #print '\n\n'
-    #t.reset_counters()
+        # print '\n\n'
+    # t.reset_counters()
     # t.delete_rule(t_rule)
     # t.flush_rules()
-    #print t.get_chain()
-    #t.remove()
+    # print t.get_chain()
+    # t.remove()
     # t.remove()
