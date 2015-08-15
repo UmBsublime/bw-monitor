@@ -6,7 +6,7 @@ table = iptc.Table(iptc.Table.FILTER)
 def get_rule_comment(r):
     for m in r.matches:
         if m.comment is not None:
-            return m.comment
+            return str(m.comment)
     return None
 
 
@@ -22,7 +22,7 @@ def get_rule_spec(rule):
         if m.sport is not None:
             sport = m.sport
         if m.comment is not None:
-            name = m.comment
+            name = str(m.comment)
 
     if dport is None:
         dport = 0

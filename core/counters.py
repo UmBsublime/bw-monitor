@@ -53,10 +53,10 @@ class Counter(object):
         self.dual_chain.reset_counters()
         pass
 
-    def get_counters(self):
-        result = {'in': self.input_chain.get_counters(),
-                  'out': self.output_chain.get_counters(),
-                  'dual': self.dual_chain.get_counters()}
+    def get_counters(self, convert_units=True):
+        result = {'in': self.input_chain.get_counters(convert_units),
+                  'out': self.output_chain.get_counters(convert_units),
+                  'dual': self.dual_chain.get_counters(convert_units)}
         return result
 
     def flush_rules(self):
