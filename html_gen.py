@@ -62,6 +62,10 @@ template_bot = '''
 '''
 
 
+import sys
+
+MAX_VAL = int(sys.argv[1])
+
 def convert_to_deltas(value_list):
 
     if len(value_list) >= 2:
@@ -102,9 +106,10 @@ for line in content:
 times = times[1:]
 values = convert_to_deltas(values)
 
-if len(times) >= 20:
-    times = times[-20:]
-    values = values[-20:]
+if len(times) >= MAX_VAL:
+    #print 'mod values'
+    times = times[-MAX_VAL:]
+    values = values[-MAX_VAL:]
 
 print template_top + repr(times) + template_mid + repr(values) + template_bot
 

@@ -13,6 +13,7 @@ from core import rules, counters, config_parser
 USER = 'cvaillancourt'
 LOG_PATH = '/home/{}/log/{}.log'.format(USER, path.basename(__file__))
 
+
 def setup_logging():
 
     fpath, fname = path.split(LOG_PATH)
@@ -35,7 +36,9 @@ def main():
     print ':) main brah'
     setup_logging()
 
-    test_rule_config = config_parser.parse_file(sys.argv[1])
+    test_rule_config = config_parser.parse_file(sys.argv[2])
+    DELAY = int(sys.argv[1])
+
 
     test_rules = []
     for r in test_rule_config:
@@ -65,7 +68,7 @@ def main():
                     print '{}, {}: {}'.format(k, c['name'],c['bytes'])
 
         print '*'*80
-        sleep(60)
+        sleep(DELAY)
 
 
 
